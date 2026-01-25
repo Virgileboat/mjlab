@@ -15,7 +15,7 @@ from mjlab.utils.spec_config import CollisionCfg
 ##
 
 LEROBOT_HUMANOID_MESH_DIR: Path = MJLAB_SRC_PATH / "../../../lerobot-humanoid-model/models/bipedal_plateform/mjcf"
-LEROBOT_HUMANOID_XML: Path = LEROBOT_HUMANOID_MESH_DIR / "robot_mjlab.xml"
+LEROBOT_HUMANOID_XML: Path = LEROBOT_HUMANOID_MESH_DIR / "robot_mjlab_gen.xml"
 
 assert LEROBOT_HUMANOID_XML.exists(), f"MJCF file not found: {LEROBOT_HUMANOID_XML}"
 
@@ -65,9 +65,9 @@ ANKLE_EFFORT_LIMIT = 40.0
 
 LEROBOT_ACTUATOR_HIP = BuiltinPositionActuatorCfg(
   target_names_expr=(
-    ".*_hip_z_joint",
-    ".*_hip_x_joint",
-    ".*_hip_y_joint",
+    "hipz_.*",
+    "hipx_.*",
+    "hipy_.*",
   ),
   stiffness=HIP_STIFFNESS,
   damping=HIP_DAMPING,
@@ -76,7 +76,7 @@ LEROBOT_ACTUATOR_HIP = BuiltinPositionActuatorCfg(
 )
 
 LEROBOT_ACTUATOR_KNEE = BuiltinPositionActuatorCfg(
-  target_names_expr=(".*_knee_joint",),
+  target_names_expr=("knee_.*",),
   stiffness=KNEE_STIFFNESS,
   damping=KNEE_DAMPING,
   effort_limit=KNEE_EFFORT_LIMIT,
@@ -85,8 +85,8 @@ LEROBOT_ACTUATOR_KNEE = BuiltinPositionActuatorCfg(
 
 LEROBOT_ACTUATOR_ANKLE = BuiltinPositionActuatorCfg(
   target_names_expr=(
-    ".*_ankle_y_joint",
-    ".*_ankle_x_joint",
+    "ankley_.*",
+    "anklex_.*",
   ),
   stiffness=ANKLE_STIFFNESS,
   damping=ANKLE_DAMPING,
@@ -111,12 +111,12 @@ KNEES_BENT_KEYFRAME = EntityCfg.InitialStateCfg(
   pos=(0, 0, 0.68),
   joint_pos={
     # Slightly bent knees for better initial stability.
-    ".*_hip_y_joint": -0.2,
-    ".*_knee_joint": 0.4,
-    ".*_ankle_y_joint": -0.2,
-    ".*_hip_z_joint": 0.0,
-    ".*_hip_x_joint": 0.0,
-    ".*_ankle_x_joint": 0.0,
+    ".*": -0.,
+    ".*": 0.,
+    ".*": -0.,
+    ".*": 0.0,
+    ".*": 0.0,
+    ".*": 0.0,
   },
   joint_vel={".*": 0.0},
 )

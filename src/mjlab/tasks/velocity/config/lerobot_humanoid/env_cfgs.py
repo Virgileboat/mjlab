@@ -34,7 +34,7 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     name="feet_ground_contact",
     primary=ContactMatch(
       mode="subtree",
-      pattern=r"^(left_ankle_x_link|right_ankle_x_link)$",
+      pattern=r"^(foot_subassembly_2|foot_subassembly)$",
       entity="robot",
     ),
     secondary=ContactMatch(mode="body", pattern="terrain"),
@@ -52,7 +52,7 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     num_slots=1,
   )
   cfg.scene.sensors = (feet_ground_cfg, self_collision_cfg)
-
+  
   if cfg.scene.terrain is not None and cfg.scene.terrain.terrain_generator is not None:
     cfg.scene.terrain.terrain_generator.curriculum = True
 
@@ -78,21 +78,22 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   cfg.rewards["pose"].params["std_standing"] = {".*": 0.05}
   cfg.rewards["pose"].params["std_walking"] = {
     # Lower body - 12 DOF.
-    r".*hip_y.*": 0.3,
-    r".*hip_x.*": 0.15,
-    r".*hip_z.*": 0.15,
+    r".*hipy.*": 0.3,
+    r".*hipx.*": 0.15,
+    r".*hipz.*": 0.15,
     r".*knee.*": 0.35,
-    r".*ankle_y.*": 0.25,
-    r".*ankle_x.*": 0.1,
+    r".*ankley.*": 0.25,
+    r".*anklex.*": 0.1,
   }
+  
   cfg.rewards["pose"].params["std_running"] = {
     # Lower body - 12 DOF.
-    r".*hip_y.*": 0.5,
-    r".*hip_x.*": 0.2,
-    r".*hip_z.*": 0.2,
+    r".*hipy.*": 0.5,
+    r".*hipx.*": 0.2,
+    r".*hipz.*": 0.2,
     r".*knee.*": 0.6,
-    r".*ankle_y.*": 0.35,
-    r".*ankle_x.*": 0.15,
+    r".*ankley.*": 0.35,
+    r".*anklex.*": 0.15,
   }
 
   cfg.rewards["upright"].params["asset_cfg"].body_names = ("base",)
