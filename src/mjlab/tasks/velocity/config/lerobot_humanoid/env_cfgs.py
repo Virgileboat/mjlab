@@ -25,9 +25,9 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
 
   cfg.scene.entities = {"robot": get_lerobot_humanoid_robot_cfg()}
 
-  site_names = ("left_foot", "right_foot")
+  site_names = ("foot_right", "foot_left")
   geom_names = tuple(
-    f"{side}_foot{i}_collision" for side in ("left", "right") for i in range(1, 4)
+    f"{side}_foot_collision" for side in ("left", "right") 
   )
 
   feet_ground_cfg = ContactSensorCfg(
@@ -45,8 +45,8 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   )
   self_collision_cfg = ContactSensorCfg(
     name="self_collision",
-    primary=ContactMatch(mode="subtree", pattern="base", entity="robot"),
-    secondary=ContactMatch(mode="subtree", pattern="base", entity="robot"),
+    primary=ContactMatch(mode="subtree", pattern="torso_meshe", entity="robot"),
+    secondary=ContactMatch(mode="subtree", pattern="torso_meshe", entity="robot"),
     fields=("found",),
     reduce="none",
     num_slots=1,
@@ -60,7 +60,7 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   assert isinstance(joint_pos_action, JointPositionActionCfg)
   joint_pos_action.scale = LEROBOT_HUMANOID_ACTION_SCALE
 
-  cfg.viewer.body_name = "base"
+  cfg.viewer.body_name = "torso_meshe"
 
   twist_cmd = cfg.commands["twist"]
   assert isinstance(twist_cmd, UniformVelocityCommandCfg)
@@ -71,7 +71,7 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   ].site_names = site_names
 
   cfg.events["foot_friction"].params["asset_cfg"].geom_names = geom_names
-  cfg.events["base_com"].params["asset_cfg"].body_names = ("base",)
+  cfg.events["base_com"].params["asset_cfg"].body_names = ("torso_meshe",)
 
   # Pose reward std values for the 12-DOF humanoid.
   # Hip joints get more freedom, ankle roll is tight for balance.
@@ -96,8 +96,8 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     r".*anklex.*": 0.15,
   }
 
-  cfg.rewards["upright"].params["asset_cfg"].body_names = ("base",)
-  cfg.rewards["body_ang_vel"].params["asset_cfg"].body_names = ("base",)
+  cfg.rewards["upright"].params["asset_cfg"].body_names = ("torso_meshe",)
+  cfg.rewards["body_ang_vel"].params["asset_cfg"].body_names = ("torso_meshe",)
 
   for reward_name in ["foot_clearance", "foot_swing_height", "foot_slip"]:
     cfg.rewards[reward_name].params["asset_cfg"].site_names = site_names

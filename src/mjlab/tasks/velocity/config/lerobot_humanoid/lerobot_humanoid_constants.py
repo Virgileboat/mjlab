@@ -15,7 +15,7 @@ from mjlab.utils.spec_config import CollisionCfg
 ##
 
 LEROBOT_HUMANOID_MESH_DIR: Path = MJLAB_SRC_PATH / "../../../lerobot-humanoid-model/models/bipedal_plateform/mjcf"
-LEROBOT_HUMANOID_XML: Path = LEROBOT_HUMANOID_MESH_DIR / "robot_mjlab_gen.xml"
+LEROBOT_HUMANOID_XML: Path = LEROBOT_HUMANOID_MESH_DIR / "robot.xml"
 
 assert LEROBOT_HUMANOID_XML.exists(), f"MJCF file not found: {LEROBOT_HUMANOID_XML}"
 
@@ -28,7 +28,9 @@ def get_assets(meshdir: str) -> dict[str, bytes]:
 
 def get_spec() -> mujoco.MjSpec:
   spec = mujoco.MjSpec.from_file(str(LEROBOT_HUMANOID_XML))
+  print(spec.meshdir)
   spec.assets = get_assets(spec.meshdir)
+
   return spec
 
 
@@ -127,7 +129,7 @@ KNEES_BENT_KEYFRAME = EntityCfg.InitialStateCfg(
 
 # Enable foot collisions with appropriate friction.
 FEET_ONLY_COLLISION = CollisionCfg(
-  geom_names_expr=(r"^(left|right)_foot[1-3]_collision$",),
+  geom_names_expr=(r"^(left|right)_foot_collision$",),
   contype=0,
   conaffinity=1,
   condim=3,
@@ -138,9 +140,9 @@ FEET_ONLY_COLLISION = CollisionCfg(
 # Full collision including self-collisions.
 FULL_COLLISION = CollisionCfg(
   geom_names_expr=(".*_collision",),
-  condim={r"^(left|right)_foot[1-3]_collision$": 3, ".*_collision": 1},
-  priority={r"^(left|right)_foot[1-3]_collision$": 1},
-  friction={r"^(left|right)_foot[1-3]_collision$": (0.6,)},
+  condim={r"^(left|right)_foot_collision$": 3, ".*_collision": 1},
+  priority={r"^(left|right)_foot_collision$": 1},
+  friction={r"^(left|right)_foot_collision$": (0.6,)},
 )
 
 ##
