@@ -111,7 +111,10 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     weight=-1.0,
     params={"sensor_name": self_collision_cfg.name},
   )
-
+  cfg.scene.terrain.friction = "1.2 0.005 0.0001"
+  cfg.scene.terrain.solref = "0.01 1"
+  cfg.scene.terrain.solimp = "0.99 0.999 0.001 0.5 2"
+  cfg.scene.terrain.contact = "enable"
   # Apply play mode overrides.
   if play:
     # Effectively infinite episode length.
@@ -124,6 +127,7 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
       mode="reset",
       params={},
     )
+
 
     if cfg.scene.terrain is not None:
       if cfg.scene.terrain.terrain_generator is not None:

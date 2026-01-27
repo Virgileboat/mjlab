@@ -1,4 +1,4 @@
-"""LeRobot Humanoid (12-DOF bipedal) constants."""
+"""LeRobot Humanoid (20-DOF bipedal) constants."""
 
 from pathlib import Path
 
