@@ -141,7 +141,8 @@ KNEES_BENT_KEYFRAME = EntityCfg.InitialStateCfg(
 # Enable foot collisions with appropriate friction.
 FEET_ONLY_COLLISION = CollisionCfg(
   geom_names_expr=(r"^(left|right)_foot_collision$",),
-  contype=0,
+  # contype=0 disables contacts entirely; keep it enabled for ground contact.
+  contype=1,
   conaffinity=1,
   condim=3,
   priority=1,
@@ -158,12 +159,10 @@ FEET_ONLY_COLLISION = CollisionCfg(
 
 
 FULL_COLLISION = CollisionCfg(
-  geom_names_expr=(r"^(left|right)_foot_collision$",),
-  contype=0,
-  conaffinity=1,
-  condim=3,
-  priority=1,
-  friction=(0.6,),
+  geom_names_expr=(".*_collision",),
+  condim={r"^(left|right)_foot_collision$": 3, ".*_collision": 1},
+  priority={r"^(left|right)_foot_collision$": 1},
+  friction={r"^(left|right)_foot_collision$": (0.6,)},
 )
 
 ##
@@ -214,4 +213,3 @@ if __name__ == "__main__":
 
   robot = Entity(get_lerobot_humanoid_full_robot_cfg())
   viewer.launch(robot.spec.compile())
-
