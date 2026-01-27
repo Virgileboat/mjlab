@@ -60,25 +60,27 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
     # LeRobot is currently sensitive to contact instability on rough terrain.
     # Make the rough terrain milder by shrinking the most aggressive features.
     tg = cfg.scene.terrain.terrain_generator
+    # Avoid very low difficulties which can generate degenerate heightfields.
+    tg.difficulty_range = (0.2, 0.8)
     sub = dict(tg.sub_terrains)
     if "pyramid_stairs" in sub:
       sub["pyramid_stairs"] = replace(
-        sub["pyramid_stairs"], step_height_range=(0.02, 0.04)
+        sub["pyramid_stairs"], step_height_range=(0.06, 0.08)
       )
     if "pyramid_stairs_inv" in sub:
       sub["pyramid_stairs_inv"] = replace(
-        sub["pyramid_stairs_inv"], step_height_range=(0.02, 0.04)
+        sub["pyramid_stairs_inv"], step_height_range=(0.06, 0.08)
       )
     if "hf_pyramid_slope" in sub:
-      sub["hf_pyramid_slope"] = replace(sub["hf_pyramid_slope"], slope_range=(0.02, 0.1))
+      sub["hf_pyramid_slope"] = replace(sub["hf_pyramid_slope"], slope_range=(0.08, 0.1))
     if "hf_pyramid_slope_inv" in sub:
       sub["hf_pyramid_slope_inv"] = replace(
-        sub["hf_pyramid_slope_inv"], slope_range=(0.02, 0.1)
+        sub["hf_pyramid_slope_inv"], slope_range=(0.08, 0.1)
       )
     if "random_rough" in sub:
-      sub["random_rough"] = replace(sub["random_rough"], noise_range=(0.01, 0.04))
+      sub["random_rough"] = replace(sub["random_rough"], noise_range=(0.03, 0.04))
     if "wave_terrain" in sub:
-      sub["wave_terrain"] = replace(sub["wave_terrain"], amplitude_range=(0.02, 0.1))
+      sub["wave_terrain"] = replace(sub["wave_terrain"], amplitude_range=(0.08, 0.1))
     tg.sub_terrains = sub
 
   joint_pos_action = cfg.actions["joint_pos"]
