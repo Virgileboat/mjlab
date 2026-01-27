@@ -149,11 +149,21 @@ FEET_ONLY_COLLISION = CollisionCfg(
 )
 
 # Full collision including self-collisions.
+# FULL_COLLISION = CollisionCfg(
+#   geom_names_expr=(".*_collision",),
+#   condim={r"^(left|right)_foot_collision$": 3, ".*_collision": 1},
+#   priority={r"^(left|right)_foot_collision$": 1},
+#   friction={r"^(left|right)_foot_collision$": (0.6,)},
+# )
+
+
 FULL_COLLISION = CollisionCfg(
-  geom_names_expr=(".*_collision",),
-  condim={r"^(left|right)_foot_collision$": 3, ".*_collision": 1},
-  priority={r"^(left|right)_foot_collision$": 1},
-  friction={r"^(left|right)_foot_collision$": (0.6,)},
+  geom_names_expr=(r"^(left|right)_foot_collision$",),
+  contype=0,
+  conaffinity=1,
+  condim=3,
+  priority=1,
+  friction=(0.6,),
 )
 
 ##
