@@ -9,6 +9,7 @@ from mjlab.envs import mdp as envs_mdp
 from mjlab.envs.mdp.actions import JointPositionActionCfg
 from mjlab.managers.event_manager import EventTermCfg
 from mjlab.managers.reward_manager import RewardTermCfg
+from mjlab.managers.termination_manager import TerminationTermCfg
 from mjlab.sensor import ContactMatch, ContactSensorCfg
 from mjlab.tasks.velocity import mdp
 from mjlab.tasks.velocity.mdp import UniformVelocityCommandCfg
@@ -64,6 +65,8 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
 
   # Extra safety margin at reset: spawn well above the terrain origin.
   cfg.events["reset_base"].params["pose_range"]["z"] = (0.18, 0.30)
+  # Remove aggressive randomizations while debugging stability.
+  cfg.events.pop("push_robot", None)
 
   joint_pos_action = cfg.actions["joint_pos"]
   assert isinstance(joint_pos_action, JointPositionActionCfg)
@@ -74,6 +77,11 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   twist_cmd = cfg.commands["twist"]
   assert isinstance(twist_cmd, UniformVelocityCommandCfg)
   twist_cmd.viz.z_offset = 0.9  # Adjust based on robot height.
+  # Disable command curriculum and shrink command ranges.
+  cfg.curriculum.pop("command_vel", None)
+  twist_cmd.ranges.lin_vel_x = (-0.4, 0.6)
+  twist_cmd.ranges.lin_vel_y = (-0.2, 0.2)
+  twist_cmd.ranges.ang_vel_z = (-0.3, 0.3)
 
   cfg.observations["critic"].terms["foot_height"].params[
     "asset_cfg"
@@ -124,6 +132,8 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
     weight=-1.0,
     params={"sensor_name": self_collision_cfg.name},
   )
+  # Terminate (and reset) any environment that blows up numerically.
+  cfg.terminations["nan_detection"] = TerminationTermCfg(func=mdp.nan_detection)
   cfg.scene.terrain.friction = "1.2 0.005 0.0001"
   cfg.scene.terrain.solref = "0.01 1"
   cfg.scene.terrain.solimp = "0.99 0.999 0.001 0.5 2"
