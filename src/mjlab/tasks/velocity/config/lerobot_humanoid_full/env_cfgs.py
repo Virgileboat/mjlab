@@ -1,7 +1,5 @@
 """LeRobot Humanoid velocity environment configurations."""
 
-from dataclasses import replace
-
 from .lerobot_humanoid_full_constants import (
   LEROBOT_HUMANOID_FULL_ACTION_SCALE,
   get_lerobot_humanoid_full_robot_cfg,
@@ -15,6 +13,7 @@ from mjlab.sensor import ContactMatch, ContactSensorCfg
 from mjlab.tasks.velocity import mdp
 from mjlab.tasks.velocity.mdp import UniformVelocityCommandCfg
 from mjlab.tasks.velocity.velocity_env_cfg import make_velocity_env_cfg
+from mjlab.terrains import BoxFlatTerrainCfg
 
 
 def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
@@ -56,33 +55,12 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   cfg.scene.sensors = (feet_ground_cfg, self_collision_cfg)
   
   if cfg.scene.terrain is not None and cfg.scene.terrain.terrain_generator is not None:
-    cfg.scene.terrain.terrain_generator.curriculum = True
-    # LeRobot is currently sensitive to contact instability on rough terrain.
-    # Make the rough terrain milder by shrinking the most aggressive features.
+    # Terrain isolation mode: disable curriculum and use a flat-only generator.
     tg = cfg.scene.terrain.terrain_generator
-    # Avoid very low difficulties which can generate degenerate heightfields.
-    tg.difficulty_range = (0.2, 0.8)
-    sub = dict(tg.sub_terrains)
-    if "pyramid_stairs" in sub:
-      sub["pyramid_stairs"] = replace(
-        sub["pyramid_stairs"], step_height_range=(0.06, 0.08)
-      )
-    if "pyramid_stairs_inv" in sub:
-      sub["pyramid_stairs_inv"] = replace(
-        sub["pyramid_stairs_inv"], step_height_range=(0.06, 0.08)
-      )
-    if "hf_pyramid_slope" in sub:
-      sub["hf_pyramid_slope"] = replace(sub["hf_pyramid_slope"], slope_range=(0.08, 0.1))
-    if "hf_pyramid_slope_inv" in sub:
-      sub["hf_pyramid_slope_inv"] = replace(
-        sub["hf_pyramid_slope_inv"], slope_range=(0.08, 0.1)
-      )
-    if "random_rough" in sub:
-      # Raise the minimum terrain height so the computed spawn origin isn't too low.
-      sub["random_rough"] = replace(sub["random_rough"], noise_range=(0.04, 0.08))
-    # Wave terrain reports spawn_height=0.0 and can place the robot into the ground.
-    sub.pop("wave_terrain", None)
-    tg.sub_terrains = sub
+    tg.curriculum = False
+    cfg.scene.terrain.max_init_terrain_level = 0
+    cfg.curriculum.pop("terrain_levels", None)
+    tg.sub_terrains = {"flat": BoxFlatTerrainCfg(proportion=1.0)}
 
   # Extra safety margin at reset: spawn well above the terrain origin.
   cfg.events["reset_base"].params["pose_range"]["z"] = (0.18, 0.30)
@@ -189,8 +167,7 @@ def lerobot_humanoid_full_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvC
   cfg.scene.terrain.terrain_generator = None
 
   # Disable terrain curriculum.
-  assert "terrain_levels" in cfg.curriculum
-  del cfg.curriculum["terrain_levels"]
+  cfg.curriculum.pop("terrain_levels", None)
 
   if play:
     twist_cmd = cfg.commands["twist"]
