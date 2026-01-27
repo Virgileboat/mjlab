@@ -9,12 +9,10 @@ from mjlab.envs import mdp as envs_mdp
 from mjlab.envs.mdp.actions import JointPositionActionCfg
 from mjlab.managers.event_manager import EventTermCfg
 from mjlab.managers.reward_manager import RewardTermCfg
-from mjlab.managers.termination_manager import TerminationTermCfg
 from mjlab.sensor import ContactMatch, ContactSensorCfg
 from mjlab.tasks.velocity import mdp
 from mjlab.tasks.velocity.mdp import UniformVelocityCommandCfg
 from mjlab.tasks.velocity.velocity_env_cfg import make_velocity_env_cfg
-from mjlab.terrains import BoxFlatTerrainCfg
 
 
 def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
@@ -56,40 +54,25 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   cfg.scene.sensors = (feet_ground_cfg, self_collision_cfg)
   
   if cfg.scene.terrain is not None and cfg.scene.terrain.terrain_generator is not None:
-    # Terrain isolation mode: disable curriculum and use a flat-only generator.
-    tg = cfg.scene.terrain.terrain_generator
-    tg.curriculum = False
-    cfg.scene.terrain.max_init_terrain_level = 0
-    cfg.curriculum.pop("terrain_levels", None)
-    tg.sub_terrains = {"flat": BoxFlatTerrainCfg(proportion=1.0)}
+    cfg.scene.terrain.terrain_generator.curriculum = True
+    # Keep only the noisy heightfield terrain.
+    sub = dict(cfg.scene.terrain.terrain_generator.sub_terrains)
+    cfg.scene.terrain.terrain_generator.sub_terrains = {
+      "random_rough": sub["random_rough"]
+    }
 
-  # Extra safety margin at reset: spawn well above the terrain origin.
-  cfg.events["reset_base"].params["pose_range"]["z"] = (0.18, 0.30)
-  # Remove aggressive randomizations while debugging stability.
+  # Disable push recovery while debugging stability.
   cfg.events.pop("push_robot", None)
 
   joint_pos_action = cfg.actions["joint_pos"]
   assert isinstance(joint_pos_action, JointPositionActionCfg)
   joint_pos_action.scale = LEROBOT_HUMANOID_FULL_ACTION_SCALE
-  # Temporarily reduce action magnitude to limit physics blow-ups.
-  if isinstance(joint_pos_action.scale, dict):
-    joint_pos_action.scale = {
-      k: float(v) * 0.25 for k, v in joint_pos_action.scale.items()
-    }
 
   cfg.viewer.body_name = "torso_subassembly_2"
 
   twist_cmd = cfg.commands["twist"]
   assert isinstance(twist_cmd, UniformVelocityCommandCfg)
   twist_cmd.viz.z_offset = 0.9  # Adjust based on robot height.
-  # Disable command curriculum and shrink command ranges.
-  cfg.curriculum.pop("command_vel", None)
-  twist_cmd.ranges.lin_vel_x = (-0.4, 0.6)
-  twist_cmd.ranges.lin_vel_y = (-0.2, 0.2)
-  twist_cmd.ranges.ang_vel_z = (-0.3, 0.3)
-  # Hard clip policy observations to prevent NaNs/Infs from propagating.
-  for term_name, term_cfg in cfg.observations["policy"].terms.items():
-    term_cfg.clip = (-50.0, 50.0) if term_name == "joint_vel" else (-20.0, 20.0)
 
   cfg.observations["critic"].terms["foot_height"].params[
     "asset_cfg"
@@ -140,17 +123,10 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
     weight=-1.0,
     params={"sensor_name": self_collision_cfg.name},
   )
-  # Terminate (and reset) any environment that blows up numerically.
-  cfg.terminations["nan_detection"] = TerminationTermCfg(func=mdp.nan_detection)
-  # Terminate early if the root drops too low (e.g., fell through terrain).
-  cfg.terminations["root_too_low"] = TerminationTermCfg(
-    func=mdp.root_height_below_minimum,
-    params={"minimum_height": 0.35},
-  )
   cfg.scene.terrain.friction = "1.2 0.005 0.0001"
   cfg.scene.terrain.solref = "0.01 1"
   cfg.scene.terrain.solimp = "0.99 0.999 0.001 0.5 2"
-  # cfg.scene.terrain.contact = "enable"
+  cfg.scene.terrain.contact = "enable"
   # Apply play mode overrides.
   if play:
     # Effectively infinite episode length.
@@ -190,7 +166,8 @@ def lerobot_humanoid_full_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvC
   cfg.scene.terrain.terrain_generator = None
 
   # Disable terrain curriculum.
-  cfg.curriculum.pop("terrain_levels", None)
+  assert "terrain_levels" in cfg.curriculum
+  del cfg.curriculum["terrain_levels"]
 
   if play:
     twist_cmd = cfg.commands["twist"]
