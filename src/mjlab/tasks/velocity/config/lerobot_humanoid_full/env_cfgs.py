@@ -142,6 +142,11 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   )
   # Terminate (and reset) any environment that blows up numerically.
   cfg.terminations["nan_detection"] = TerminationTermCfg(func=mdp.nan_detection)
+  # Terminate early if the root drops too low (e.g., fell through terrain).
+  cfg.terminations["root_too_low"] = TerminationTermCfg(
+    func=mdp.root_height_below_minimum,
+    params={"minimum_height": 0.35},
+  )
   cfg.scene.terrain.friction = "1.2 0.005 0.0001"
   cfg.scene.terrain.solref = "0.01 1"
   cfg.scene.terrain.solimp = "0.99 0.999 0.001 0.5 2"
