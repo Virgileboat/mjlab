@@ -61,11 +61,6 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   if cfg.scene.terrain is not None and cfg.scene.terrain.terrain_generator is not None:
     cfg.scene.terrain.terrain_generator.curriculum = True
 
-  # Disable the most aggressive randomizations while debugging rough terrain stability.
-  cfg.events.pop("push_robot", None)
-  cfg.events.pop("base_com", None)
-  cfg.events.pop("foot_friction", None)
-
   joint_pos_action = cfg.actions["joint_pos"]
   assert isinstance(joint_pos_action, JointPositionActionCfg)
   joint_pos_action.scale = LEROBOT_HUMANOID_FULL_ACTION_SCALE
