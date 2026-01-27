@@ -71,6 +71,11 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   joint_pos_action = cfg.actions["joint_pos"]
   assert isinstance(joint_pos_action, JointPositionActionCfg)
   joint_pos_action.scale = LEROBOT_HUMANOID_FULL_ACTION_SCALE
+  # Temporarily reduce action magnitude to limit physics blow-ups.
+  if isinstance(joint_pos_action.scale, dict):
+    joint_pos_action.scale = {
+      k: float(v) * 0.25 for k, v in joint_pos_action.scale.items()
+    }
 
   cfg.viewer.body_name = "torso_subassembly_2"
 
@@ -82,6 +87,9 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   twist_cmd.ranges.lin_vel_x = (-0.4, 0.6)
   twist_cmd.ranges.lin_vel_y = (-0.2, 0.2)
   twist_cmd.ranges.ang_vel_z = (-0.3, 0.3)
+  # Hard clip policy observations to prevent NaNs/Infs from propagating.
+  for term_name, term_cfg in cfg.observations["policy"].terms.items():
+    term_cfg.clip = (-50.0, 50.0) if term_name == "joint_vel" else (-20.0, 20.0)
 
   cfg.observations["critic"].terms["foot_height"].params[
     "asset_cfg"
