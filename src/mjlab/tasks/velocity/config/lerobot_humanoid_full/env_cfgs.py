@@ -78,7 +78,7 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
     if "random_rough" in sub:
       sub["random_rough"] = replace(sub["random_rough"], noise_range=(0.01, 0.04))
     if "wave_terrain" in sub:
-      sub["wave_terrain"] = replace(sub["wave_terrain"], amplitude_range=(0.0, 0.05))
+      sub["wave_terrain"] = replace(sub["wave_terrain"], amplitude_range=(0.0, 0.1))
     tg.sub_terrains = sub
 
   joint_pos_action = cfg.actions["joint_pos"]
@@ -140,10 +140,10 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
     weight=-1.0,
     params={"sensor_name": self_collision_cfg.name},
   )
-  # cfg.scene.terrain.friction = "1.2 0.005 0.0001"
-  # cfg.scene.terrain.solref = "0.01 1"
-  # cfg.scene.terrain.solimp = "0.99 0.999 0.001 0.5 2"
-  # cfg.scene.terrain.contact = "enable"
+  cfg.scene.terrain.friction = "1.2 0.005 0.0001"
+  cfg.scene.terrain.solref = "0.01 1"
+  cfg.scene.terrain.solimp = "0.99 0.999 0.001 0.5 2"
+  cfg.scene.terrain.contact = "enable"
   # Apply play mode overrides.
   if play:
     # Effectively infinite episode length.

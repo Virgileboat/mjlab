@@ -163,7 +163,10 @@ FULL_COLLISION = CollisionCfg(
   condim={r"^(left|right)_foot_collision$": 3, ".*_collision": 1},
   priority={r"^(left|right)_foot_collision$": 1},
   friction={r"^(left|right)_foot_collision$": (0.6,)},
-  
+  # solref: (timeconst, dampratio) - smaller timeconst = stiffer, less bouncy
+  solref={r"^(left|right)_foot_collision$": (0.005, 1.0)},
+  # solimp: (dmin, dmax, width, midpoint, power) - higher values = less penetration
+  solimp={r"^(left|right)_foot_collision$": (0.995, 0.9995, 0.001, 0.5, 2)},
 )
 
 ##
