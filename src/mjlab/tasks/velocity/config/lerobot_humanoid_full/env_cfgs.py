@@ -1,6 +1,7 @@
 """LeRobot Humanoid velocity environment configurations."""
 
 from .lerobot_humanoid_full_constants import (
+  FEET_ONLY_COLLISION,
   LEROBOT_HUMANOID_FULL_ACTION_SCALE,
   get_lerobot_humanoid_full_robot_cfg,
 )
@@ -23,7 +24,11 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   cfg.sim.contact_sensor_maxmatch = 500
   cfg.sim.nconmax = 45
 
-  cfg.scene.entities = {"robot": get_lerobot_humanoid_full_robot_cfg()}
+  robot_cfg = get_lerobot_humanoid_full_robot_cfg()
+  # Rough terrain can blow up when many body parts collide with the heightfield.
+  # Start with feet-only collisions to reduce contact instability.
+  robot_cfg.collisions = (FEET_ONLY_COLLISION,)
+  cfg.scene.entities = {"robot": robot_cfg}
 
   site_names = ("foot_right", "foot_left")
   geom_names = tuple(
@@ -55,6 +60,11 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   
   if cfg.scene.terrain is not None and cfg.scene.terrain.terrain_generator is not None:
     cfg.scene.terrain.terrain_generator.curriculum = True
+
+  # Disable the most aggressive randomizations while debugging rough terrain stability.
+  cfg.events.pop("push_robot", None)
+  cfg.events.pop("base_com", None)
+  cfg.events.pop("foot_friction", None)
 
   joint_pos_action = cfg.actions["joint_pos"]
   assert isinstance(joint_pos_action, JointPositionActionCfg)
@@ -168,4 +178,3 @@ def lerobot_humanoid_full_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvC
     twist_cmd.ranges.ang_vel_z = (-0.7, 0.7)
 
   return cfg
-
