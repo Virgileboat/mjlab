@@ -1,8 +1,8 @@
 """LeRobot Humanoid velocity environment configurations."""
 
-from .lerobot_humanoid_no_arms_constants import (
-  LEROBOT_HUMANOID_NO_ARMS_ACTION_SCALE,
-  get_lerobot_humanoid_no_arms_robot_cfg,
+from .lerobot_humanoid_full_constants import (
+  LEROBOT_HUMANOID_FULL_ACTION_SCALE,
+  get_lerobot_humanoid_full_robot_cfg,
 )
 from mjlab.envs import ManagerBasedRlEnvCfg
 from mjlab.envs import mdp as envs_mdp
@@ -15,7 +15,7 @@ from mjlab.tasks.velocity.mdp import UniformVelocityCommandCfg
 from mjlab.tasks.velocity.velocity_env_cfg import make_velocity_env_cfg
 
 
-def lerobot_humanoid_no_arms_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
+def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   """Create LeRobot Humanoid rough terrain velocity configuration."""
   cfg = make_velocity_env_cfg()
 
@@ -23,7 +23,7 @@ def lerobot_humanoid_no_arms_rough_env_cfg(play: bool = False) -> ManagerBasedRl
   cfg.sim.contact_sensor_maxmatch = 500
   cfg.sim.nconmax = 45
 
-  cfg.scene.entities = {"robot": get_lerobot_humanoid_no_arms_robot_cfg()}
+  cfg.scene.entities = {"robot": get_lerobot_humanoid_full_robot_cfg()}
 
   site_names = ("foot_right", "foot_left")
   geom_names = tuple(
@@ -45,8 +45,8 @@ def lerobot_humanoid_no_arms_rough_env_cfg(play: bool = False) -> ManagerBasedRl
   )
   self_collision_cfg = ContactSensorCfg(
     name="self_collision",
-    primary=ContactMatch(mode="subtree", pattern="torso_meshe", entity="robot"),
-    secondary=ContactMatch(mode="subtree", pattern="torso_meshe", entity="robot"),
+    primary=ContactMatch(mode="subtree", pattern="torso_subassembly_2", entity="robot"),
+    secondary=ContactMatch(mode="subtree", pattern="torso_subassembly_2", entity="robot"),
     fields=("found",),
     reduce="none",
     num_slots=1,
@@ -58,9 +58,9 @@ def lerobot_humanoid_no_arms_rough_env_cfg(play: bool = False) -> ManagerBasedRl
 
   joint_pos_action = cfg.actions["joint_pos"]
   assert isinstance(joint_pos_action, JointPositionActionCfg)
-  joint_pos_action.scale = LEROBOT_HUMANOID_NO_ARMS_ACTION_SCALE
+  joint_pos_action.scale = LEROBOT_HUMANOID_FULL_ACTION_SCALE
 
-  cfg.viewer.body_name = "torso_meshe"
+  cfg.viewer.body_name = "torso_subassembly_2"
 
   twist_cmd = cfg.commands["twist"]
   assert isinstance(twist_cmd, UniformVelocityCommandCfg)
@@ -71,33 +71,37 @@ def lerobot_humanoid_no_arms_rough_env_cfg(play: bool = False) -> ManagerBasedRl
   ].site_names = site_names
 
   cfg.events["foot_friction"].params["asset_cfg"].geom_names = geom_names
-  cfg.events["base_com"].params["asset_cfg"].body_names = ("torso_meshe",)
+  cfg.events["base_com"].params["asset_cfg"].body_names = ("torso_subassembly_2",)
 
   # Pose reward std values for the 12-DOF humanoid.
   # Hip joints get more freedom, ankle roll is tight for balance.
   cfg.rewards["pose"].params["std_standing"] = {".*": 0.05}
   cfg.rewards["pose"].params["std_walking"] = {
-    # Lower body - 12 DOF.
+    # Lower body - 20 DOF.
     r".*hipy.*": 0.3,
     r".*hipx.*": 0.15,
     r".*hipz.*": 0.15,
     r".*knee.*": 0.35,
     r".*ankley.*": 0.25,
     r".*anklex.*": 0.1,
+    r".*shoulder.*":0.1,
+    r".*elbow.*":0.1,
   }
   
   cfg.rewards["pose"].params["std_running"] = {
-    # Lower body - 12 DOF.
+    # Lower body - 20 DOF.
     r".*hipy.*": 0.5,
     r".*hipx.*": 0.2,
     r".*hipz.*": 0.2,
     r".*knee.*": 0.6,
     r".*ankley.*": 0.35,
     r".*anklex.*": 0.15,
+    r".*shoulder.*":0.1,
+    r".*elbow.*":0.1,
   }
 
-  cfg.rewards["upright"].params["asset_cfg"].body_names = ("torso_meshe",)
-  cfg.rewards["body_ang_vel"].params["asset_cfg"].body_names = ("torso_meshe",)
+  cfg.rewards["upright"].params["asset_cfg"].body_names = ("torso_subassembly_2",)
+  cfg.rewards["body_ang_vel"].params["asset_cfg"].body_names = ("torso_subassembly_2",)
 
   for reward_name in ["foot_clearance", "foot_swing_height", "foot_slip"]:
     cfg.rewards[reward_name].params["asset_cfg"].site_names = site_names
@@ -135,9 +139,9 @@ def lerobot_humanoid_no_arms_rough_env_cfg(play: bool = False) -> ManagerBasedRl
   return cfg
 
 
-def lerobot_humanoid_no_arms_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
+def lerobot_humanoid_full_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   """Create LeRobot Humanoid flat terrain velocity configuration."""
-  cfg = lerobot_humanoid_no_arms_rough_env_cfg(play=play)
+  cfg = lerobot_humanoid_full_rough_env_cfg(play=play)
 
   cfg.sim.njmax = 300
   cfg.sim.mujoco.ccd_iterations = 50

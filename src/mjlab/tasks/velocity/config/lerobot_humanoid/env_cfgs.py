@@ -34,7 +34,7 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     name="feet_ground_contact",
     primary=ContactMatch(
       mode="subtree",
-      pattern=r"^(foot_subassembly_2|foot_subassembly)$",
+      pattern=r"^(foot_subassembly|foot_subassembly_2)$",
       entity="robot",
     ),
     secondary=ContactMatch(mode="body", pattern="terrain"),
