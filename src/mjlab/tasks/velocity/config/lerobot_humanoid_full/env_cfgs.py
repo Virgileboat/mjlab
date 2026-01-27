@@ -78,10 +78,14 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
         sub["hf_pyramid_slope_inv"], slope_range=(0.08, 0.1)
       )
     if "random_rough" in sub:
-      sub["random_rough"] = replace(sub["random_rough"], noise_range=(0.03, 0.04))
-    if "wave_terrain" in sub:
-      sub["wave_terrain"] = replace(sub["wave_terrain"], amplitude_range=(0.08, 0.1))
+      # Raise the minimum terrain height so the computed spawn origin isn't too low.
+      sub["random_rough"] = replace(sub["random_rough"], noise_range=(0.04, 0.08))
+    # Wave terrain reports spawn_height=0.0 and can place the robot into the ground.
+    sub.pop("wave_terrain", None)
     tg.sub_terrains = sub
+
+  # Extra safety margin at reset: spawn well above the terrain origin.
+  cfg.events["reset_base"].params["pose_range"]["z"] = (0.18, 0.30)
 
   joint_pos_action = cfg.actions["joint_pos"]
   assert isinstance(joint_pos_action, JointPositionActionCfg)
