@@ -322,8 +322,6 @@ def make_velocity_env_cfg() -> ManagerBasedRlEnvCfg:
       func=mdp.bad_orientation,
       params={"limit_angle": math.radians(70.0)},
     ),
-    # Guard against physics blow-ups (NaN/Inf) on rough terrain.
-    "nan_detection": TerminationTermCfg(func=mdp.nan_detection),
   }
 
   ##
