@@ -147,6 +147,10 @@ FEET_ONLY_COLLISION = CollisionCfg(
   condim=3,
   priority=1,
   friction=(0.6,),
+  # solref: (timeconst, dampratio) - smaller timeconst = stiffer, less bouncy
+  solref={r"^(left|right)_foot_collision$": (0.005, 1.0)},
+  # solimp: (dmin, dmax, width, midpoint, power) - higher values = less penetration
+  solimp={r"^(left|right)_foot_collision$": (0.995, 0.9995, 0.001, 0.5, 2)},
 )
 
 # Full collision including self-collisions.
@@ -204,7 +208,7 @@ def get_lerobot_humanoid_full_robot_cfg() -> EntityCfg:
   """
   return EntityCfg(
     init_state=KNEES_BENT_KEYFRAME,
-    collisions=(FULL_COLLISION,),
+    collisions=(FEET_ONLY_COLLISION,),
     spec_fn=get_spec,
     articulation=LEROBOT_HUMANOID_FULL_ARTICULATION,
   )
