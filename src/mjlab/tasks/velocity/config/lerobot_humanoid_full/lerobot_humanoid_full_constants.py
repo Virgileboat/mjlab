@@ -163,7 +163,7 @@ FEET_ONLY_COLLISION = CollisionCfg(
 
 
 FULL_COLLISION = CollisionCfg(
-  geom_names_expr=(".*_collision", r"^femur_12(_sym)?$"),
+  geom_names_expr=(".*_collision", ),
   condim={
     r"^(left|right)_foot_collision$": 3,
     ".*_collision": 1,
