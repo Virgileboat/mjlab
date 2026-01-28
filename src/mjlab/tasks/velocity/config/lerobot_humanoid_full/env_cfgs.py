@@ -45,7 +45,7 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   )
   self_collision_cfg = ContactSensorCfg(
     name="self_collision",
-    primary=ContactMatch(mode="subtree", pattern="torso_subassembly", entity="robot"),
+    primary=ContactMatch(mode="subtree", pattern="torso_subassembly_2", entity="robot"),
     secondary=ContactMatch(mode="subtree", pattern="torso_subassembly_2", entity="robot"),
     fields=("found",),
     reduce="none",
