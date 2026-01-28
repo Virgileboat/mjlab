@@ -29,7 +29,7 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   geom_names = tuple(
     f"{side}_foot{i}_collision" for side in ("left", "right") for i in range(1, 7)
   )
-  
+
   feet_ground_cfg = ContactSensorCfg(
     name="feet_ground_contact",
     primary=ContactMatch(
@@ -58,9 +58,9 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     cfg.scene.terrain.terrain_generator.difficulty_range = (0.0, 0.4)
     for sub_cfg in cfg.scene.terrain.terrain_generator.sub_terrains.values():
       if hasattr(sub_cfg, "step_height_range"):
-        sub_cfg.step_height_range = (0.0, 0.05)
+        sub_cfg.step_height_range = (0.0, 0.08)
       if hasattr(sub_cfg, "slope_range"):
-        sub_cfg.slope_range = (0.0, 0.4)
+        sub_cfg.slope_range = (0.0, 0.6)
       if hasattr(sub_cfg, "noise_range"):
         sub_cfg.noise_range = (0.01, 0.04)
       if hasattr(sub_cfg, "amplitude_range"):
