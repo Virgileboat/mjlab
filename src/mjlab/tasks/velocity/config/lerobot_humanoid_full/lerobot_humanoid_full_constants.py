@@ -161,21 +161,28 @@ FEET_ONLY_COLLISION = CollisionCfg(
 #   friction={r"^(left|right)_foot_collision$": (0.6,)},
 # )
 
-
 FULL_COLLISION = CollisionCfg(
-  geom_names_expr=(".*_collision", ),
-  condim={
-    r"^(left|right)_foot_collision$": 3,
-    ".*_collision": 1,
-    r"^femur_12(_sym)?$": 1,
-  },
+  geom_names_expr=(".*_collision",),
+  condim={r"^(left|right)_foot_collision$": 3, ".*_collision": 1},
   priority={r"^(left|right)_foot_collision$": 1},
   friction={r"^(left|right)_foot_collision$": (0.6,)},
-  # solref: (timeconst, dampratio) - smaller timeconst = stiffer, less bouncy
-  solref={r"^(left|right)_foot_collision$": (0.005, 1.0)},
-  # solimp: (dmin, dmax, width, midpoint, power) - higher values = less penetration
-  solimp={r"^(left|right)_foot_collision$": (0.995, 0.9995, 0.001, 0.5, 2)},
 )
+
+
+# FULL_COLLISION = CollisionCfg(
+#   geom_names_expr=(".*_collision", ),
+#   condim={
+#     r"^(left|right)_foot_collision$": 3,
+#     ".*_collision": 1,
+#     r"^femur_12(_sym)?$": 1,
+#   },
+#   priority={r"^(left|right)_foot_collision$": 1},
+#   friction={r"^(left|right)_foot_collision$": (1.,)},
+#   # solref: (timeconst, dampratio) - smaller timeconst = stiffer, less bouncy
+#   solref={r"^(left|right)_foot_collision$": (0.001, 1.0)},
+#   # solimp: (dmin, dmax, width, midpoint, power) - higher values = less penetration
+#   solimp={r"^(left|right)_foot_collision$": (0.995, 0.9995, 0.001, 0.5, 2)},
+# )
 
 # Full collision but disable self-collisions (feet still collide with terrain).
 NO_SELF_COLLISION = CollisionCfg(
