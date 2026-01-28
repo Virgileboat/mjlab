@@ -6,6 +6,7 @@ from mjlab.envs import ManagerBasedRlEnvCfg
 from mjlab.envs import mdp as envs_mdp
 from mjlab.managers.event_manager import EventTermCfg
 from mjlab.managers.observation_manager import ObservationTermCfg
+from mjlab.managers.termination_manager import TerminationTermCfg
 from mjlab.sensor import ContactMatch, ContactSensorCfg
 from mjlab.tasks.velocity import mdp
 from mjlab.tasks.velocity.mdp import UniformVelocityCommandCfg
@@ -118,6 +119,13 @@ def leggy_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   cfg.rewards["body_ang_vel"].weight = -0.05
   cfg.rewards["angular_momentum"].weight = -0.02
   cfg.rewards["air_time"].weight = 0.0
+
+  # Terminate if the base gets too low (kneeling).
+  cfg.terminations["body_below_floor"] = TerminationTermCfg(
+    func=mdp.root_height_below_minimum,
+    params={"minimum_height": 0.15},
+  )
+
 
   cfg.events["push_robot"].interval_range_s = (3.0, 5.0)
   cfg.events["push_robot"].params["velocity_range"] = {
