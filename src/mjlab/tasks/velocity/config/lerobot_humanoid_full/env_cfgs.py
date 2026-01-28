@@ -19,8 +19,8 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   """Create LeRobot Humanoid rough terrain velocity configuration."""
   cfg = make_velocity_env_cfg()
 
-  cfg.sim.mujoco.ccd_iterations = 1000
-  cfg.sim.contact_sensor_maxmatch = 500
+  cfg.sim.mujoco.ccd_iterations = 500
+  cfg.sim.contact_sensor_maxmatch = 1000
   cfg.sim.nconmax = 45
 
   cfg.scene.entities = {"robot": get_lerobot_humanoid_full_robot_cfg()}
