@@ -138,8 +138,14 @@ def open_duck_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   cfg.rewards["foot_swing_height"].params["target_height"] = 0.05
 
   # Tighten velocity tracking for small robot.
-  cfg.rewards["track_linear_velocity"].params["std"] = 0.2
-  cfg.rewards["track_angular_velocity"].params["std"] = 0.45
+  cfg.rewards["track_linear_velocity"].params["std"] = 0.15
+  cfg.rewards["track_angular_velocity"].params["std"] = 0.35
+  cfg.rewards["track_linear_velocity"].weight = 4.0
+  cfg.rewards["track_angular_velocity"].weight = 3.0
+
+  # Reduce posture dominance to encourage velocity tracking.
+  cfg.rewards["upright"].weight = 0.5
+  cfg.rewards["pose"].weight = 0.5
 
   cfg.rewards["body_ang_vel"].weight = -0.05
   cfg.rewards["angular_momentum"].weight = -0.02
