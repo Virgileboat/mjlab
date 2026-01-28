@@ -27,9 +27,9 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
 
   site_names = ("foot_right", "foot_left")
   geom_names = tuple(
-    f"{side}_foot_collision" for side in ("left", "right") 
+    f"{side}_foot{i}_collision" for side in ("left", "right") for i in range(1, 7)
   )
-
+  
   feet_ground_cfg = ContactSensorCfg(
     name="feet_ground_contact",
     primary=ContactMatch(

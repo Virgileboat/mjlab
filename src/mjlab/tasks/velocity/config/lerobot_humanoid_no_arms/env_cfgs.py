@@ -27,7 +27,7 @@ def lerobot_humanoid_no_arms_rough_env_cfg(play: bool = False) -> ManagerBasedRl
 
   site_names = ("foot_right", "foot_left")
   geom_names = tuple(
-    f"{side}_foot_collision" for side in ("left", "right") 
+    f"{side}_foot{i}_collision" for side in ("left", "right") for i in range(1, 7)
   )
 
   feet_ground_cfg = ContactSensorCfg(
