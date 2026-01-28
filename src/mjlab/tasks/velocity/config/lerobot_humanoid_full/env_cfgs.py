@@ -19,8 +19,8 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   """Create LeRobot Humanoid rough terrain velocity configuration."""
   cfg = make_velocity_env_cfg()
 
-  cfg.sim.mujoco.ccd_iterations = 1000
-  cfg.sim.contact_sensor_maxmatch = 1000
+  cfg.sim.mujoco.ccd_iterations = 500
+  cfg.sim.contact_sensor_maxmatch = 500
   cfg.sim.nconmax = 45
 
   cfg.scene.entities = {"robot": get_lerobot_humanoid_full_robot_cfg()}
@@ -46,7 +46,7 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   self_collision_cfg = ContactSensorCfg(
     name="self_collision",
     primary=ContactMatch(mode="subtree", pattern="torso_subassembly", entity="robot"),
-    secondary=ContactMatch(mode="subtree", pattern="torso_subassembly", entity="robot"),
+    secondary=ContactMatch(mode="subtree", pattern="torso_subassembly_2", entity="robot"),
     fields=("found",),
     reduce="none",
     num_slots=1,
