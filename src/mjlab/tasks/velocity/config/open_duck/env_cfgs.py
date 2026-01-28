@@ -52,9 +52,19 @@ def open_duck_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     num_slots=1,
   )
   cfg.scene.sensors = (feet_ground_cfg, self_collision_cfg)
-  
+
   if cfg.scene.terrain is not None and cfg.scene.terrain.terrain_generator is not None:
     cfg.scene.terrain.terrain_generator.curriculum = True
+    cfg.scene.terrain.terrain_generator.difficulty_range = (0.0, 0.3)
+    for sub_cfg in cfg.scene.terrain.terrain_generator.sub_terrains.values():
+      if hasattr(sub_cfg, "step_height_range"):
+        sub_cfg.step_height_range = (0.0, 0.03)
+      if hasattr(sub_cfg, "slope_range"):
+        sub_cfg.slope_range = (0.0, 0.3)
+      if hasattr(sub_cfg, "noise_range"):
+        sub_cfg.noise_range = (0.01, 0.03)
+      if hasattr(sub_cfg, "amplitude_range"):
+        sub_cfg.amplitude_range = (0.0, 0.05)
 
   joint_pos_action = cfg.actions["joint_pos"]
   assert isinstance(joint_pos_action, JointPositionActionCfg)
@@ -66,7 +76,7 @@ def open_duck_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   assert isinstance(twist_cmd, UniformVelocityCommandCfg)
   twist_cmd.viz.z_offset = 0.4  # Adjust based on robot height.
   twist_cmd.ranges.lin_vel_x = (-0.5, 0.5)
-  twist_cmd.ranges.lin_vel_y = (-0.5, 0.5)
+  twist_cmd.ranges.lin_vel_y = (-0.2, 0.2)
 
   cfg.observations["critic"].terms["foot_height"].params[
     "asset_cfg"
@@ -126,6 +136,10 @@ def open_duck_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   cfg.rewards["foot_clearance"].params["target_height"] = 0.05
   cfg.rewards["foot_swing_height"].params["target_height"] = 0.05
 
+  # Tighten velocity tracking for small robot.
+  cfg.rewards["track_linear_velocity"].params["std"] = 0.2
+  cfg.rewards["track_angular_velocity"].params["std"] = 0.45
+
   cfg.rewards["body_ang_vel"].weight = -0.05
   cfg.rewards["angular_momentum"].weight = -0.02
   cfg.rewards["air_time"].weight = 0.0
@@ -184,7 +198,7 @@ def open_duck_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     twist_cmd = cfg.commands["twist"]
     assert isinstance(twist_cmd, UniformVelocityCommandCfg)
     twist_cmd.ranges.lin_vel_x = (-0.5, 0.5)
-    twist_cmd.ranges.lin_vel_y = (-0.5, 0.5)
+    twist_cmd.ranges.lin_vel_y = (-0.2, 0.2)
     twist_cmd.ranges.ang_vel_z = (-0.7, 0.7)
 
   return cfg
