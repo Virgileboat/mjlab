@@ -169,6 +169,18 @@ FULL_COLLISION = CollisionCfg(
   solimp={r"^(left|right)_foot_collision$": (0.995, 0.9995, 0.001, 0.5, 2)},
 )
 
+# Full collision but disable self-collisions (feet still collide with terrain).
+NO_SELF_COLLISION = CollisionCfg(
+  geom_names_expr=(".*_collision",),
+  contype={r"^(left|right)_foot_collision$": 1, ".*_collision": 0},
+  conaffinity=1,
+  condim={r"^(left|right)_foot_collision$": 3, ".*_collision": 1},
+  priority={r"^(left|right)_foot_collision$": 1},
+  friction={r"^(left|right)_foot_collision$": (0.6,)},
+  solref={r"^(left|right)_foot_collision$": (0.005, 1.0)},
+  solimp={r"^(left|right)_foot_collision$": (0.995, 0.9995, 0.001, 0.5, 2)},
+)
+
 ##
 # Final config.
 ##
@@ -192,7 +204,7 @@ def get_lerobot_humanoid_full_robot_cfg() -> EntityCfg:
   """
   return EntityCfg(
     init_state=KNEES_BENT_KEYFRAME,
-    collisions=(FULL_COLLISION,),
+    collisions=(NO_SELF_COLLISION,),
     spec_fn=get_spec,
     articulation=LEROBOT_HUMANOID_FULL_ARTICULATION,
   )
