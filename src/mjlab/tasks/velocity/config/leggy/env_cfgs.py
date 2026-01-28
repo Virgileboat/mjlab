@@ -6,7 +6,7 @@ from mjlab.envs import ManagerBasedRlEnvCfg
 from mjlab.envs import mdp as envs_mdp
 from mjlab.managers.event_manager import EventTermCfg
 from mjlab.managers.observation_manager import ObservationTermCfg
-from mjlab.managers.termination_manager import TerminationTermCfg
+from mjlab.managers.reward_manager import RewardTermCfg
 from mjlab.sensor import ContactMatch, ContactSensorCfg
 from mjlab.tasks.velocity import mdp
 from mjlab.tasks.velocity.mdp import UniformVelocityCommandCfg
@@ -120,10 +120,11 @@ def leggy_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   cfg.rewards["angular_momentum"].weight = -0.02
   cfg.rewards["air_time"].weight = 0.0
 
-  # Terminate if the base gets too low (kneeling).
-  cfg.terminations["body_below_floor"] = TerminationTermCfg(
+  # Penalize low base height instead of terminating.
+  cfg.rewards["base_height_low"] = RewardTermCfg(
     func=mdp.root_height_below_minimum,
-    params={"minimum_height": 0.15},
+    weight=-2.0,
+    params={"minimum_height": 0.13},
   )
 
 

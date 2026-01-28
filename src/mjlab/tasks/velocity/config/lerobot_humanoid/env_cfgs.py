@@ -55,6 +55,16 @@ def lerobot_humanoid_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   
   if cfg.scene.terrain is not None and cfg.scene.terrain.terrain_generator is not None:
     cfg.scene.terrain.terrain_generator.curriculum = True
+    cfg.scene.terrain.terrain_generator.difficulty_range = (0.0, 0.4)
+    for sub_cfg in cfg.scene.terrain.terrain_generator.sub_terrains.values():
+      if hasattr(sub_cfg, "step_height_range"):
+        sub_cfg.step_height_range = (0.0, 0.05)
+      if hasattr(sub_cfg, "slope_range"):
+        sub_cfg.slope_range = (0.0, 0.4)
+      if hasattr(sub_cfg, "noise_range"):
+        sub_cfg.noise_range = (0.01, 0.04)
+      if hasattr(sub_cfg, "amplitude_range"):
+        sub_cfg.amplitude_range = (0.0, 0.08)
 
   joint_pos_action = cfg.actions["joint_pos"]
   assert isinstance(joint_pos_action, JointPositionActionCfg)
@@ -164,4 +174,3 @@ def lerobot_humanoid_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     twist_cmd.ranges.ang_vel_z = (-0.7, 0.7)
 
   return cfg
-
