@@ -140,7 +140,7 @@ KNEES_BENT_KEYFRAME = EntityCfg.InitialStateCfg(
 
 # Enable foot collisions with appropriate friction.
 FEET_ONLY_COLLISION = CollisionCfg(
-  geom_names_expr=(r"^(left|right)_foot_collision$",),
+  geom_names_expr=(r"^(left|right)_foot[1-6]_collision$",),
   # contype=0 disables contacts entirely; keep it enabled for ground contact.
   contype=1,
   conaffinity=1,
@@ -148,9 +148,9 @@ FEET_ONLY_COLLISION = CollisionCfg(
   priority=1,
   friction=(0.6,),
   # solref: (timeconst, dampratio) - smaller timeconst = stiffer, less bouncy
-  solref={r"^(left|right)_foot_collision$": (0.005, 1.0)},
+  solref={r"^(left|right)_foot[1-6]_collision$": (0.005, 1.0)},
   # solimp: (dmin, dmax, width, midpoint, power) - higher values = less penetration
-  solimp={r"^(left|right)_foot_collision$": (0.995, 0.9995, 0.001, 0.5, 2)},
+  solimp={r"^(left|right)_foot[1-6]_collision$": (0.995, 0.9995, 0.001, 0.5, 2)},
 )
 
 # Full collision including self-collisions.
@@ -163,9 +163,13 @@ FEET_ONLY_COLLISION = CollisionCfg(
 
 FULL_COLLISION = CollisionCfg(
   geom_names_expr=(".*_collision",),
-  condim={r"^(left|right)_foot_collision$": 3, ".*_collision": 1},
-  priority={r"^(left|right)_foot_collision$": 1},
-  friction={r"^(left|right)_foot_collision$": (0.6,)},
+  condim={r"^(left|right)_foot[1-6]_collision$": 3, ".*_collision": 1},
+  priority={r"^(left|right)_foot[1-6]_collision$": 1},
+  friction={r"^(left|right)_foot[1-6]_collision$": (0.6,)},
+  # solref: (timeconst, dampratio) - smaller timeconst = stiffer, less bouncy
+  solref={r"^(left|right)_foot[1-6]_collision$": (0.005, 1.0)},
+  # solimp: (dmin, dmax, width, midpoint, power) - higher values = less penetration
+  solimp={r"^(left|right)_foot[1-6]_collision$": (0.995, 0.9995, 0.001, 0.5, 2)},
 )
 
 
@@ -188,20 +192,20 @@ FULL_COLLISION = CollisionCfg(
 NO_SELF_COLLISION = CollisionCfg(
   geom_names_expr=(".*_collision", r"^femur_12(_sym)?$"),
   contype={
-    r"^(left|right)_foot_collision$": 1,
+    r"^(left|right)_foot[1-6]_collision$": 1,
     ".*_collision": 0,
     r"^femur_12(_sym)?$": 0,
   },
   conaffinity=1,
   condim={
-    r"^(left|right)_foot_collision$": 3,
+    r"^(left|right)_foot[1-6]_collision$": 3,
     ".*_collision": 1,
     r"^femur_12(_sym)?$": 1,
   },
-  priority={r"^(left|right)_foot_collision$": 1},
-  friction={r"^(left|right)_foot_collision$": (0.6,)},
-  solref={r"^(left|right)_foot_collision$": (0.005, 1.0)},
-  solimp={r"^(left|right)_foot_collision$": (0.995, 0.9995, 0.001, 0.5, 2)},
+  priority={r"^(left|right)_foot[1-6]_collision$": 1},
+  friction={r"^(left|right)_foot[1-6]_collision$": (0.6,)},
+  solref={r"^(left|right)_foot[1-6]_collision$": (0.005, 1.0)},
+  solimp={r"^(left|right)_foot[1-6]_collision$": (0.995, 0.9995, 0.001, 0.5, 2)},
 )
 
 ##
