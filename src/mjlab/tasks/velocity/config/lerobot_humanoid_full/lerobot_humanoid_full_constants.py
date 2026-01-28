@@ -163,8 +163,12 @@ FEET_ONLY_COLLISION = CollisionCfg(
 
 
 FULL_COLLISION = CollisionCfg(
-  geom_names_expr=(".*_collision",),
-  condim={r"^(left|right)_foot_collision$": 3, ".*_collision": 1},
+  geom_names_expr=(".*_collision", r"^femur_12(_sym)?$"),
+  condim={
+    r"^(left|right)_foot_collision$": 3,
+    ".*_collision": 1,
+    r"^femur_12(_sym)?$": 1,
+  },
   priority={r"^(left|right)_foot_collision$": 1},
   friction={r"^(left|right)_foot_collision$": (0.6,)},
   # solref: (timeconst, dampratio) - smaller timeconst = stiffer, less bouncy
@@ -175,10 +179,18 @@ FULL_COLLISION = CollisionCfg(
 
 # Full collision but disable self-collisions (feet still collide with terrain).
 NO_SELF_COLLISION = CollisionCfg(
-  geom_names_expr=(".*_collision",),
-  contype={r"^(left|right)_foot_collision$": 1, ".*_collision": 0},
+  geom_names_expr=(".*_collision", r"^femur_12(_sym)?$"),
+  contype={
+    r"^(left|right)_foot_collision$": 1,
+    ".*_collision": 0,
+    r"^femur_12(_sym)?$": 0,
+  },
   conaffinity=1,
-  condim={r"^(left|right)_foot_collision$": 3, ".*_collision": 1},
+  condim={
+    r"^(left|right)_foot_collision$": 3,
+    ".*_collision": 1,
+    r"^femur_12(_sym)?$": 1,
+  },
   priority={r"^(left|right)_foot_collision$": 1},
   friction={r"^(left|right)_foot_collision$": (0.6,)},
   solref={r"^(left|right)_foot_collision$": (0.005, 1.0)},
@@ -208,7 +220,7 @@ def get_lerobot_humanoid_full_robot_cfg() -> EntityCfg:
   """
   return EntityCfg(
     init_state=KNEES_BENT_KEYFRAME,
-    collisions=(FEET_ONLY_COLLISION,),
+    collisions=(FULL_COLLISION,),
     spec_fn=get_spec,
     articulation=LEROBOT_HUMANOID_FULL_ARTICULATION,
   )

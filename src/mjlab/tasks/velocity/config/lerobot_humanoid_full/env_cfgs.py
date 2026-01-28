@@ -51,7 +51,7 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
     reduce="none",
     num_slots=1,
   )
-  cfg.scene.sensors = (feet_ground_cfg,)# self_collision_cfg)
+  cfg.scene.sensors = (feet_ground_cfg, self_collision_cfg)
   
   if cfg.scene.terrain is not None and cfg.scene.terrain.terrain_generator is not None:
     cfg.scene.terrain.terrain_generator.curriculum = True
@@ -118,11 +118,11 @@ def lerobot_humanoid_full_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnv
   cfg.rewards["angular_momentum"].weight = -0.02
   cfg.rewards["air_time"].weight = 0.0
 
-  # cfg.rewards["self_collisions"] = RewardTermCfg(
-  #   func=mdp.self_collision_cost,
-  #   weight=-1.0,
-  #   params={"sensor_name": self_collision_cfg.name},
-  # )
+  cfg.rewards["self_collisions"] = RewardTermCfg(
+    func=mdp.self_collision_cost,
+    weight=-1.0,
+    params={"sensor_name": self_collision_cfg.name},
+  )
   cfg.scene.terrain.friction = "1.2 0.005 0.0001"
   cfg.scene.terrain.solref = "0.01 1"
   cfg.scene.terrain.solimp = "0.99 0.999 0.001 0.5 2"
