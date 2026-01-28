@@ -65,6 +65,8 @@ def open_duck_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   twist_cmd = cfg.commands["twist"]
   assert isinstance(twist_cmd, UniformVelocityCommandCfg)
   twist_cmd.viz.z_offset = 0.4  # Adjust based on robot height.
+  twist_cmd.ranges.lin_vel_x = (-0.5, 0.5)
+  twist_cmd.ranges.lin_vel_y = (-0.5, 0.5)
 
   cfg.observations["critic"].terms["foot_height"].params[
     "asset_cfg"
@@ -119,6 +121,10 @@ def open_duck_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
 
   for reward_name in ["foot_clearance", "foot_swing_height", "foot_slip"]:
     cfg.rewards[reward_name].params["asset_cfg"].site_names = site_names
+
+  # Scale foot clearance targets for ~0.5m robot.
+  cfg.rewards["foot_clearance"].params["target_height"] = 0.05
+  cfg.rewards["foot_swing_height"].params["target_height"] = 0.05
 
   cfg.rewards["body_ang_vel"].weight = -0.05
   cfg.rewards["angular_momentum"].weight = -0.02
@@ -177,7 +183,8 @@ def open_duck_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   if play:
     twist_cmd = cfg.commands["twist"]
     assert isinstance(twist_cmd, UniformVelocityCommandCfg)
-    twist_cmd.ranges.lin_vel_x = (-1.5, 2.0)
+    twist_cmd.ranges.lin_vel_x = (-0.5, 0.5)
+    twist_cmd.ranges.lin_vel_y = (-0.5, 0.5)
     twist_cmd.ranges.ang_vel_z = (-0.7, 0.7)
 
   return cfg
