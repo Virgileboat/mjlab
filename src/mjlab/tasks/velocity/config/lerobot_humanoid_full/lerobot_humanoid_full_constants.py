@@ -204,7 +204,7 @@ def get_lerobot_humanoid_full_robot_cfg() -> EntityCfg:
   """
   return EntityCfg(
     init_state=KNEES_BENT_KEYFRAME,
-    collisions=(NO_SELF_COLLISION,),
+    collisions=(FEET_ONLY_COLLISION,),
     spec_fn=get_spec,
     articulation=LEROBOT_HUMANOID_FULL_ARTICULATION,
   )
