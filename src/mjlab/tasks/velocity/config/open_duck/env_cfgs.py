@@ -75,8 +75,9 @@ def open_duck_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   twist_cmd = cfg.commands["twist"]
   assert isinstance(twist_cmd, UniformVelocityCommandCfg)
   twist_cmd.viz.z_offset = 0.4  # Adjust based on robot height.
-  twist_cmd.ranges.lin_vel_x = (-0.5, 0.5)
-  twist_cmd.ranges.lin_vel_y = (-0.2, 0.2)
+  twist_cmd.ranges.lin_vel_x = (-0.3, 0.3)
+  twist_cmd.ranges.lin_vel_y = (-0.1, 0.1)
+  twist_cmd.ranges.ang_vel_z = (-0.5, 0.5)
 
   cfg.observations["critic"].terms["foot_height"].params[
     "asset_cfg"
@@ -144,6 +145,16 @@ def open_duck_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   cfg.rewards["angular_momentum"].weight = -0.02
   cfg.rewards["air_time"].weight = 0.0
 
+  cfg.events["push_robot"].interval_range_s = (2.0, 4.0)
+  cfg.events["push_robot"].params["velocity_range"] = {
+    "x": (-0.2, 0.2),
+    "y": (-0.2, 0.2),
+    "z": (-0.1, 0.1),
+    "roll": (-0.1, 0.1),
+    "pitch": (-0.1, 0.1),
+    "yaw": (-0.2, 0.2),
+  }
+
   cfg.rewards["self_collisions"] = RewardTermCfg(
     func=mdp.self_collision_cost,
     weight=-1.0,
@@ -197,8 +208,8 @@ def open_duck_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   if play:
     twist_cmd = cfg.commands["twist"]
     assert isinstance(twist_cmd, UniformVelocityCommandCfg)
-    twist_cmd.ranges.lin_vel_x = (-0.5, 0.5)
-    twist_cmd.ranges.lin_vel_y = (-0.2, 0.2)
-    twist_cmd.ranges.ang_vel_z = (-0.7, 0.7)
+    twist_cmd.ranges.lin_vel_x = (-0.3, 0.3)
+    twist_cmd.ranges.lin_vel_y = (-0.1, 0.1)
+    twist_cmd.ranges.ang_vel_z = (-0.5, 0.5)
 
   return cfg

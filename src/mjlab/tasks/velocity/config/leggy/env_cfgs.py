@@ -56,9 +56,9 @@ def leggy_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   twist_cmd = cfg.commands["twist"]
   assert isinstance(twist_cmd, UniformVelocityCommandCfg)
   twist_cmd.viz.z_offset = 0.3
-  twist_cmd.ranges.lin_vel_x = (-0.2, 0.2)
-  twist_cmd.ranges.lin_vel_y = (-0.1, 0.1)
-  twist_cmd.ranges.ang_vel_z = (-0.2, 0.2)
+  twist_cmd.ranges.lin_vel_x = (-0.15, 0.15)
+  twist_cmd.ranges.lin_vel_y = (-0.08, 0.08)
+  twist_cmd.ranges.ang_vel_z = (-0.15, 0.15)
 
   cfg.observations["critic"].terms["foot_height"].params[
     "asset_cfg"
@@ -118,6 +118,16 @@ def leggy_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   cfg.rewards["body_ang_vel"].weight = -0.05
   cfg.rewards["angular_momentum"].weight = -0.02
   cfg.rewards["air_time"].weight = 0.0
+
+  cfg.events["push_robot"].interval_range_s = (3.0, 5.0)
+  cfg.events["push_robot"].params["velocity_range"] = {
+    "x": (-0.1, 0.1),
+    "y": (-0.1, 0.1),
+    "z": (-0.05, 0.05),
+    "roll": (-0.05, 0.05),
+    "pitch": (-0.05, 0.05),
+    "yaw": (-0.1, 0.1),
+  }
 
   # Use motor-space observations for the parallel knee mechanism.
   cfg.observations["policy"].terms["joint_pos"] = ObservationTermCfg(
@@ -180,8 +190,8 @@ def leggy_flat_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   if play:
     twist_cmd = cfg.commands["twist"]
     assert isinstance(twist_cmd, UniformVelocityCommandCfg)
-    twist_cmd.ranges.lin_vel_x = (-0.2, 0.2)
-    twist_cmd.ranges.lin_vel_y = (-0.1, 0.1)
-    twist_cmd.ranges.ang_vel_z = (-0.2, 0.2)
+    twist_cmd.ranges.lin_vel_x = (-0.15, 0.15)
+    twist_cmd.ranges.lin_vel_y = (-0.08, 0.08)
+    twist_cmd.ranges.ang_vel_z = (-0.15, 0.15)
 
   return cfg
