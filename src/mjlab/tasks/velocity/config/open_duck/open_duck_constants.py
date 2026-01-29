@@ -14,7 +14,7 @@ from mjlab.utils.spec_config import CollisionCfg
 # MJCF and assets.
 ##
 
-OPEN_DUCK_MESH_DIR: Path = MJLAB_SRC_PATH / "../../../lerobot-humanoid-model/models/open_duck_mini_v2"
+OPEN_DUCK_MESH_DIR: Path = MJLAB_SRC_PATH / "../../../lerobot-humanoid-model/models/open_duck"
 OPEN_DUCK_XML: Path = OPEN_DUCK_MESH_DIR / "robot.xml"
 
 assert OPEN_DUCK_XML.exists(), f"MJCF file not found: {OPEN_DUCK_XML}"
