@@ -101,7 +101,7 @@ LEROBOT_ACTUATOR_ANKLE = BuiltinPositionActuatorCfg(
 ##
 
 HOME_KEYFRAME = EntityCfg.InitialStateCfg(
-  pos=(0, 0, 0.72),
+  pos=(0, 0, 0.75),
   joint_pos={
     # Standing pose - all joints at zero.
     ".*": 0.0,
@@ -110,7 +110,7 @@ HOME_KEYFRAME = EntityCfg.InitialStateCfg(
 )
 
 KNEES_BENT_KEYFRAME = EntityCfg.InitialStateCfg(
-  pos=(0, 0, 0.68),
+  pos=(0, 0, 0.75),
   joint_pos={
     # Slightly bent knees for better initial stability.
     ".*": -0.,
@@ -144,8 +144,11 @@ FULL_COLLISION = CollisionCfg(
   condim={r"^(left|right)_foot[1-6]_collision$": 3, ".*_collision": 1},
   priority={r"^(left|right)_foot[1-6]_collision$": 1},
   friction={r"^(left|right)_foot[1-6]_collision$": (0.6,)},
+  # solref: (timeconst, dampratio) - smaller timeconst = stiffer, less bouncy
+  solref={r"^(left|right)_foot[1-6]_collision$": (0.005, 1.0)},
+  # solimp: (dmin, dmax, width, midpoint, power) - higher values = less penetration
+  solimp={r"^(left|right)_foot[1-6]_collision$": (0.995, 0.9995, 0.001, 0.5, 2)},
 )
-
 ##
 # Final config.
 ##

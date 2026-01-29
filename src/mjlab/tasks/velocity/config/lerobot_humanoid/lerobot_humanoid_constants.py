@@ -101,7 +101,7 @@ LEROBOT_ACTUATOR_ANKLE = BuiltinPositionActuatorCfg(
 ##
 
 HOME_KEYFRAME = EntityCfg.InitialStateCfg(
-  pos=(0, 0, 0.72),
+  pos=(0, 0, 0.75),
   joint_pos={
     # Standing pose - all joints at zero.
     ".*": 0.0,
@@ -110,7 +110,7 @@ HOME_KEYFRAME = EntityCfg.InitialStateCfg(
 )
 
 KNEES_BENT_KEYFRAME = EntityCfg.InitialStateCfg(
-  pos=(0, 0, 0.68),
+  pos=(0, 0, 0.75),
   joint_pos={
     # Slightly bent knees for better initial stability.
     ".*": -0.,
