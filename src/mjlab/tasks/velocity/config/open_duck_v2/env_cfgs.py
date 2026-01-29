@@ -123,22 +123,7 @@ def open_duck_v2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
     "right_knee",
     "right_ankle",
   )
-  cfg.rewards["pose"].params["std_standing"] = {
-    "left_hip_yaw": 0.2,
-    "left_hip_roll": 0.2,
-    "left_hip_pitch": 0.2,
-    "left_knee": 0.3,
-    "left_ankle": 0.2,
-    "neck_pitch": 0.15,
-    "head_pitch": 0.15,
-    "head_yaw": 0.15,
-    "head_roll": 0.15,
-    "right_hip_yaw": 0.2,
-    "right_hip_roll": 0.2,
-    "right_hip_pitch": 0.2,
-    "right_knee": 0.3,
-    "right_ankle": 0.2,
-  }
+  cfg.rewards["pose"].params["std_standing"] = {".*": 0.05}
   cfg.rewards["pose"].params["std_walking"] = {
     "left_hip_yaw": 0.3,
     "left_hip_roll": 0.3,
@@ -194,7 +179,7 @@ def open_duck_v2_rough_env_cfg(play: bool = False) -> ManagerBasedRlEnvCfg:
   cfg.rewards["pose"].weight = 0.5
 
   cfg.rewards["body_ang_vel"].weight = -0.05
-  cfg.rewards.pop("angular_momentum", None)
+  cfg.rewards["angular_momentum"].weight = -0.02
   cfg.rewards["air_time"].weight = 0.0
 
   cfg.events["push_robot"].interval_range_s = (2.0, 4.0)
